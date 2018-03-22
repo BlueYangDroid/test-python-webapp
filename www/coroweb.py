@@ -74,6 +74,7 @@ class RequestHandler(object):
 	# 先构造fn进入
 	def __init__(self, app, fn):
 		super(RequestHandler, self).__init__()
+		logging.info('RequestHandler __init__: %s ' % fn.__route__)
 		self._app = app
 		self._func = fn
 		self._has_request_arg = has_request_arg(fn)
@@ -82,8 +83,9 @@ class RequestHandler(object):
 		self._named_kw_args = get_named_kw_args(fn)
 		self._required_kw_args = get_required_kw_args(fn)
 
-	# 用预定的fn处理传入的request
-	async def __Call__(self, request):
+	# 用预定的fn处理传入的request，注意方法名定义为小写
+	async def __call__(self, request):
+		logging.info('RequestHandler __call__ route: %s ' % self._func.__route__)
 		kw = None
 
 		# 若视图函数有命名关键词或关键词参数 
@@ -144,7 +146,7 @@ class RequestHandler(object):
 			kw['request'] = request
 
 		# 整理视图函数中存在无默认值的命名参数，检查是否已传入kw
-		if self._get_required_kw_args:
+		if self._required_kw_args:
 			for name in self._required_kw_args:
 				if not name in kw:
 					return web.HTTPBadRequest('Missing argument: %s ' % name)
@@ -156,7 +158,8 @@ class RequestHandler(object):
 			r = await self._func(**kw)
 			return r
 		except Exception as e:
-			return dict(error=e.error, data=e.data, message=e.message)
+			logging.error('Exception: %s' % e)
+			# return dict(error=e.message)
 
 # 添加静态文件，如image，css，javascript等
 def add_static(app):

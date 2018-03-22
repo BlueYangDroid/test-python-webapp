@@ -53,14 +53,14 @@ def init_jinja2(app, **kw):
 # request是aiohttp传给path视图函数的RequestHandler的请求体
 async def logger_factory(app, handler):
 	async def logger(request):
-		logging.info('Request: %s %s' % (request.method, request.path))
+		logging.info('logger_factory handler: %s %s' % (request.method, request.path))
 		return await handler(request)
 	return logger
 
 # 处理视图函数返回值，制作response的middleware，构造出真正的web.Response对象 
 async def response_factory(app, handler):
 	async def response(request):
-		logging.info('Response handler...')
+		logging.info('response_factory handler...')
 		# RequestHandler处理之后的切面
 		r = await handler(request)
 		logging.info('response result = %s' % str(r))
