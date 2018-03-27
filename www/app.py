@@ -33,6 +33,7 @@ def init_jinja2(app, **kw):
 	# 获取模板文件夹路径 
 	path = kw.get('path', None)
 	if not path:
+		# os.path.abspath(__file__)获取当前运行脚本的绝对路径
 		path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 	env = Environment(loader = FileSystemLoader(path), **options)
@@ -130,6 +131,7 @@ if __name__ == '__main__':
 
 	async def init(loop):
 		app = web.Application(loop = loop, middlewares=[logger_factory, response_factory])
+
 		init_jinja2(app, filters=dict(datetime = datetime_filter))
 		add_routes(app, 'test_view')
 		add_static(app)
@@ -140,7 +142,6 @@ if __name__ == '__main__':
 	loop = asyncio.get_event_loop()
 	loop.run_until_complete(init(loop))
 	loop.run_forever()
-
 
 # def index(request):
 # 	return web.Response(body=b'<h1>Test python</h1>', content_type='text/html')

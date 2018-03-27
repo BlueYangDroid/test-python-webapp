@@ -5,7 +5,7 @@ import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio, os, inspect, functools
 from urllib import parse
 from aiohttp import web
-# from apis import APIError
+from apis import APIError
 
 def Handler_decorator(path, *, method):
 	''' define decorator @get('/path') '''
@@ -157,9 +157,9 @@ class RequestHandler(object):
 		try:
 			r = await self._func(**kw)
 			return r
-		except Exception as e:
+		except APIError as e:
 			logging.error('Exception: %s' % e)
-			# return dict(error=e.message)
+			return dict(error=e.error, data=e.data, message=e.message)
 
 # 添加静态文件，如image，css，javascript等
 def add_static(app):
